@@ -18,7 +18,7 @@ class MockEncoding extends Encoding {
   String get name => throw UnimplementedError();
 }
 
-class MockHttpClientRequest extends HttpClientRequest {
+class MockHttpClientRequest implements HttpClientRequest {
   final Response Function(MockHttpClientRequestData) fCallResponse;
   final HttpHeaders _headers;
   Encoding _encoding;
@@ -116,4 +116,19 @@ class MockHttpClientRequest extends HttpClientRequest {
   Encoding get encoding => _encoding;
   @override
   set encoding(Encoding value) => _encoding = value;
+
+  @override
+  bool bufferOutput = true;
+
+  @override
+  int contentLength = -1;
+
+  @override
+  bool followRedirects = false;
+
+  @override
+  int maxRedirects = 5;
+
+  @override
+  bool persistentConnection = true;
 }

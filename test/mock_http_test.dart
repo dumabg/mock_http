@@ -64,7 +64,7 @@ void main() {
       http.Response response = await http
           .get(Uri(scheme: 'https', host: 'www.google.com'))
           .catchError((e) {
-        expect(e, 'No mock for https://www.google.com');
+        expect(e, 'No mock for GET https://www.google.com');
         return http.Response('', HttpStatus.noContent);
       });
       expect(response.body.isEmpty, true);

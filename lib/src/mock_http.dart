@@ -33,31 +33,71 @@ class MockHttp extends HttpOverrides {
         heads: heads,
         patchs: patchs,
         allowHttpClientWhenNoMock: allowHttpClientWhenNoMock);
+  }  
+
+  Uri _pathToUri(String path) {
+    var uri = Uri.parse(path);
+    return Uri(scheme: uri.hasScheme ? uri.scheme : defaultScheme, 
+      host: uri.host.isEmpty ? defaultHost : uri.host, 
+      port: uri.hasPort ? uri.port : defaultPort, 
+      path: uri.pathSegments.isEmpty ? uri.path : null,
+      fragment: uri.fragment.isEmpty ? null : uri.fragment,
+      pathSegments: uri.pathSegments.isEmpty ? null: uri.pathSegments,
+      query: uri.queryParameters.isEmpty ? uri.query : null,
+      queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,
+      userInfo: uri.userInfo.isEmpty ? null : uri.userInfo);
   }
 
-  void registerGet(
+  void registerUriGet(
           Uri uri, Response Function(MockHttpClientRequestData) response) =>
       gets.add(Call(uri, response));
 
-  void registerPost(
+  void registerGet(
+          String path, Response Function(MockHttpClientRequestData) response) =>
+      gets.add(Call(_pathToUri(path), response));
+
+
+  void registerUriPost(
           Uri uri, Response Function(MockHttpClientRequestData) response) =>
       posts.add(Call(uri, response));
 
-  void registerPut(
+  void registerPost(
+          String path, Response Function(MockHttpClientRequestData) response) =>
+      posts.add(Call(_pathToUri(path), response));
+
+
+  void registerUriPut(
           Uri uri, Response Function(MockHttpClientRequestData) response) =>
       puts.add(Call(uri, response));
 
-  void registerDelete(
+  void registerPut(
+          String path, Response Function(MockHttpClientRequestData) response) =>
+      puts.add(Call(_pathToUri(path), response));
+
+
+  void registerUriDelete(
           Uri uri, Response Function(MockHttpClientRequestData) response) =>
       deletes.add(Call(uri, response));
 
-  void registerHead(
+  void registerDelete(
+          String path, Response Function(MockHttpClientRequestData) response) =>
+      deletes.add(Call(_pathToUri(path), response));
+
+  void registerUriHead(
           Uri uri, Response Function(MockHttpClientRequestData) response) =>
       heads.add(Call(uri, response));
 
-  void registerPatch(
+  void registerHead(
+          String path, Response Function(MockHttpClientRequestData) response) =>
+      heads.add(Call(_pathToUri(path), response));
+
+  void registerUriPatch(
           Uri uri, Response Function(MockHttpClientRequestData) response) =>
       patchs.add(Call(uri, response));
+
+  void registerPatch(
+          String path, Response Function(MockHttpClientRequestData) response) =>
+      patchs.add(Call(_pathToUri(path), response));
 
   void registerGets(
       {String? scheme,
@@ -65,7 +105,7 @@ class MockHttp extends HttpOverrides {
       int? port,
       required Map<String, Response Function(MockHttpClientRequestData)>
           pathResponses}) {
-    _register(scheme, host, port, pathResponses, registerGet);
+    _register(scheme, host, port, pathResponses, registerUriGet);
   }
 
   void registerPosts(
@@ -74,7 +114,7 @@ class MockHttp extends HttpOverrides {
       int? port,
       required Map<String, Response Function(MockHttpClientRequestData)>
           pathResponses}) {
-    _register(scheme, host, port, pathResponses, registerPost);
+    _register(scheme, host, port, pathResponses, registerUriPost);
   }
 
   void registerPuts(
@@ -83,7 +123,7 @@ class MockHttp extends HttpOverrides {
       int? port,
       required Map<String, Response Function(MockHttpClientRequestData)>
           pathResponses}) {
-    _register(scheme, host, port, pathResponses, registerPut);
+    _register(scheme, host, port, pathResponses, registerUriPut);
   }
 
   void registerDeletes(
@@ -92,7 +132,7 @@ class MockHttp extends HttpOverrides {
       int? port,
       required Map<String, Response Function(MockHttpClientRequestData)>
           pathResponses}) {
-    _register(scheme, host, port, pathResponses, registerDelete);
+    _register(scheme, host, port, pathResponses, registerUriDelete);
   }
 
   void registerHeads(
@@ -101,7 +141,7 @@ class MockHttp extends HttpOverrides {
       int? port,
       required Map<String, Response Function(MockHttpClientRequestData)>
           pathResponses}) {
-    _register(scheme, host, port, pathResponses, registerHead);
+    _register(scheme, host, port, pathResponses, registerUriHead);
   }
 
   void registerPatchs(
@@ -110,7 +150,7 @@ class MockHttp extends HttpOverrides {
       int? port,
       required Map<String, Response Function(MockHttpClientRequestData)>
           pathResponses}) {
-    _register(scheme, host, port, pathResponses, registerPatch);
+    _register(scheme, host, port, pathResponses, registerUriPatch);
   }
 
   void _register(
@@ -124,7 +164,7 @@ class MockHttp extends HttpOverrides {
     port = port ?? defaultPort;
     for (MapEntry<String, Response Function(MockHttpClientRequestData)> entry
         in pathResponses.entries) {
-      f(Uri(scheme: scheme, host: host, path: entry.key), entry.value);
+      f(Uri(scheme: scheme, host: host, port: port, path: entry.key), entry.value);
     }
   }
 }

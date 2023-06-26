@@ -12,6 +12,8 @@ class Call {
   Call(this.uri, this.f);
 }
 
+enum _DispatchKind {get, post, put, delete, head, patch}
+
 class MockHttpClient implements HttpClient {
   HttpClient httpClient;
   final List<Call> gets;
@@ -52,7 +54,7 @@ class MockHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> deleteUrl(Uri uri) =>
-      dispatch(deletes, uri, httpClient.deleteUrl);
+      _dispatch(_DispatchKind.delete, deletes, uri, httpClient.deleteUrl);
 
   @override
   set findProxy(String Function(Uri url)? f) {
@@ -65,7 +67,7 @@ class MockHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> getUrl(Uri uri) =>
-      dispatch(gets, uri, httpClient.getUrl);
+      _dispatch(_DispatchKind.get, gets, uri, httpClient.getUrl);
 
   @override
   Future<HttpClientRequest> head(String host, int port, String path) =>
@@ -73,7 +75,7 @@ class MockHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> headUrl(Uri uri) =>
-      dispatch(heads, uri, httpClient.headUrl);
+      _dispatch(_DispatchKind.head, heads, uri, httpClient.headUrl);
 
   @override
   Future<HttpClientRequest> open(
@@ -107,7 +109,7 @@ class MockHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> patchUrl(Uri uri) =>
-      dispatch(patchs, uri, httpClient.patchUrl);
+      _dispatch(_DispatchKind.patch, patchs, uri, httpClient.patchUrl);
 
   @override
   Future<HttpClientRequest> post(String host, int port, String path) =>
@@ -115,7 +117,7 @@ class MockHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> postUrl(Uri uri) =>
-      dispatch(posts, uri, httpClient.postUrl);
+      _dispatch(_DispatchKind.post, posts, uri, httpClient.postUrl);
 
   @override
   Future<HttpClientRequest> put(String host, int port, String path) =>
@@ -123,7 +125,7 @@ class MockHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> putUrl(Uri uri) =>
-      dispatch(puts, uri, httpClient.putUrl);
+      _dispatch(_DispatchKind.put, puts, uri, httpClient.putUrl);
 
   @override
   void addCredentials(
@@ -162,14 +164,18 @@ class MockHttpClient implements HttpClient {
     httpClient.close(force: force);
   }
 
-  Future<HttpClientRequest> dispatch(List<Call> calls, Uri uri,
+  Future<HttpClientRequest> _dispatch(_DispatchKind kind, List<Call> calls, Uri uri,
       Future<HttpClientRequest> Function(Uri) defaultHttpClientMethod) {
     Response Function(MockHttpClientRequestData)? callFromUri =
         _callFromUri(calls, uri);
     if (callFromUri == null) {
-      return allowHttpClientWhenNoMock
-          ? defaultHttpClientMethod(uri)
-          : Future.error('No mock for $uri');
+      if (allowHttpClientWhenNoMock) {
+          return defaultHttpClientMethod(uri);
+      } else {
+          var sKind = kind.toString();
+          var valueKind = sKind.substring(sKind.lastIndexOf('.') + 1).toUpperCase();
+          return Future.error('No mock for $valueKind $uri');
+      }
     } else {
       return Future.value(MockHttpClientRequest(
         fCallResponse: callFromUri,
@@ -180,7 +186,7 @@ class MockHttpClient implements HttpClient {
   Response Function(MockHttpClientRequestData)? _callFromUri(
       List<Call> calls, Uri uri) {
     for (Call call in calls) {
-      if (call.uri == uri) {
+      if (call.uri.toString() == uri.toString()) {
         return call.f;
       }
     }
