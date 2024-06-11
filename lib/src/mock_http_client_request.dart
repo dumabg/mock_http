@@ -34,7 +34,7 @@ class MockHttpClientRequest implements HttpClientRequest {
 
   @override
   Future<HttpClientResponse> get done async {
-    Response response =
+    final Response response =
         fCallResponse.call(MockHttpClientRequestData(_data, _headers));
     return Future.value(MockHttpClientResponse(
         MockHttpHeaders(response.headers),
@@ -55,7 +55,7 @@ class MockHttpClientRequest implements HttpClientRequest {
   void addError(Object error, [StackTrace? stackTrace]) {}
 
   @override
-  Future addStream(Stream<List<int>> stream) async {
+  Future<void> addStream(Stream<List<int>> stream) async {
     await for (final List<int> value in stream) {
       _data.addAll(value);
     }
@@ -73,7 +73,7 @@ class MockHttpClientRequest implements HttpClientRequest {
   List<Cookie> get cookies => [];
 
   @override
-  Future flush() {
+  Future<void> flush() {
     return Future<void>.value();
   }
 
@@ -92,7 +92,7 @@ class MockHttpClientRequest implements HttpClientRequest {
   }
 
   @override
-  void writeAll(Iterable objects, [String separator = '']) {
+  void writeAll(Iterable<dynamic> objects, [String separator = '']) {
     for (final object in objects) {
       write(object);
       if (separator.isNotEmpty) {

@@ -1,11 +1,11 @@
 import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mock_http/mock_http.dart';
-import 'package:test/test.dart';
 
 void main() {
   group('Mock POST https://www.google.com', () {
-    var mockHttp =
+    final mockHttp =
         MockHttp(defaultScheme: 'https', defaultHost: 'www.google.com');
 
     setUp(() {
@@ -19,7 +19,7 @@ void main() {
           return http.Response('POST done', HttpStatus.ok);
         },
       });
-      http.Response response = await http.post(
+      final http.Response response = await http.post(
           Uri(scheme: 'https', host: 'www.google.com', path: '/hola'),
           body: 'Hola');
       expect(response.body, 'POST done');

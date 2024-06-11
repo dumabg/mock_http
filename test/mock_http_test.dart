@@ -1,11 +1,11 @@
 import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mock_http/mock_http.dart';
-import 'package:test/test.dart';
 
 void main() {
   group('Mock https://www.google.com', () {
-    var mockHttp =
+    final mockHttp =
         MockHttp(defaultScheme: 'https', defaultHost: 'www.google.com');
 
     setUp(() {
@@ -36,7 +36,7 @@ void main() {
       mockHttp.registerPosts(pathResponses: {
         '': (_) => http.Response('POST done', HttpStatus.ok),
       });
-      http.Response response =
+      final http.Response response =
           await http.post(Uri(scheme: 'https', host: 'www.google.com'));
       expect(response.body, 'POST done');
       expect(response.statusCode, HttpStatus.ok);
@@ -44,14 +44,14 @@ void main() {
   });
 
   group('AllowHttpClientWhenNoMock', () {
-    var mockHttp =
+    final mockHttp =
         MockHttp(defaultScheme: 'https', defaultHost: 'www.google.com');
 
     setUp(() {
       HttpOverrides.global = mockHttp;
     });
     test('Allow', () async {
-      http.Response response = await http
+      final http.Response response = await http
           .get(Uri(scheme: 'https', host: 'www.google.com'))
           .catchError((e) {
         expect(false, true, reason: 'Expecting no error on http get');
@@ -61,9 +61,10 @@ void main() {
     });
     test('Not allow', () async {
       mockHttp.allowHttpClientWhenNoMock = false;
-      http.Response response = await http
+      final http.Response response = await http
           .get(Uri(scheme: 'https', host: 'www.google.com'))
-          .catchError((e) {
+          // ignore: avoid_annotating_with_dynamic
+          .catchError((dynamic e) {
         expect(e, 'No mock for GET https://www.google.com');
         return http.Response('', HttpStatus.noContent);
       });

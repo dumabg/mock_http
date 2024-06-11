@@ -12,7 +12,7 @@ class Call {
   Call(this.uri, this.f);
 }
 
-enum _DispatchKind {get, post, put, delete, head, patch}
+enum _DispatchKind { get, post, put, delete, head, patch }
 
 class MockHttpClient implements HttpClient {
   HttpClient httpClient;
@@ -164,17 +164,21 @@ class MockHttpClient implements HttpClient {
     httpClient.close(force: force);
   }
 
-  Future<HttpClientRequest> _dispatch(_DispatchKind kind, List<Call> calls, Uri uri,
+  Future<HttpClientRequest> _dispatch(
+      _DispatchKind kind,
+      List<Call> calls,
+      Uri uri,
       Future<HttpClientRequest> Function(Uri) defaultHttpClientMethod) {
-    Response Function(MockHttpClientRequestData)? callFromUri =
+    final Response Function(MockHttpClientRequestData)? callFromUri =
         _callFromUri(calls, uri);
     if (callFromUri == null) {
       if (allowHttpClientWhenNoMock) {
-          return defaultHttpClientMethod(uri);
+        return defaultHttpClientMethod(uri);
       } else {
-          var sKind = kind.toString();
-          var valueKind = sKind.substring(sKind.lastIndexOf('.') + 1).toUpperCase();
-          return Future.error('No mock for $valueKind $uri');
+        final sKind = kind.toString();
+        final valueKind =
+            sKind.substring(sKind.lastIndexOf('.') + 1).toUpperCase();
+        return Future.error('No mock for $valueKind $uri');
       }
     } else {
       return Future.value(MockHttpClientRequest(
@@ -185,7 +189,7 @@ class MockHttpClient implements HttpClient {
 
   Response Function(MockHttpClientRequestData)? _callFromUri(
       List<Call> calls, Uri uri) {
-    for (Call call in calls) {
+    for (final Call call in calls) {
       if (call.uri.toString() == uri.toString()) {
         return call.f;
       }
@@ -200,5 +204,5 @@ class MockHttpClient implements HttpClient {
           f) {}
 
   @override
-  set keyLog(Function(String line)? callback) {}
+  set keyLog(void Function(String line)? callback) {}
 }
