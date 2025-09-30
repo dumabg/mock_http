@@ -1,15 +1,15 @@
 name: mock_http
 description: A Http mock library
-version: 3.0.0
+version: 3.0.1
 
 environment:
-  sdk: ">=3.4.1 <4.0.0"
+  sdk: ^3.9.0
 
 dependencies: 
   http: ^1.2.1
 
 dev_dependencies:
-  lints: ^4.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
 
