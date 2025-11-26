@@ -1,9 +1,9 @@
 name: mock_http
 description: A Http mock library
-version: 3.0.1
+version: 3.0.2
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.10.1
 
 dependencies: 
   http: ^1.2.1
